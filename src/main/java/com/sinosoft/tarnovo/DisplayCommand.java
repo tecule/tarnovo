@@ -4,8 +4,10 @@ import com.sinosoft.message.MessageProcessorCommand;
 
 public class DisplayCommand implements MessageProcessorCommand {
 
-	public void execute(String messageBody) {
-		System.out.println("received message: " + messageBody);		
+	public boolean execute(String messageBody) {
+		System.out.println("received message: " + messageBody);	
+		
+		return false;
 	}
 
 }

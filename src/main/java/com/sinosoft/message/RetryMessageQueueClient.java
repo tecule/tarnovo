@@ -14,6 +14,7 @@ public abstract class RetryMessageQueueClient {
 	protected static final String RETRY_QUEUE_NAME = "retry_queue";
 	
 	protected static final int RETRY_QUEUE_MESSAGE_TTL = 30000;
+	protected static final int PER_MESSAGE_TTL = 10000;
 	
 	protected Connection connection;
 	protected Channel channel;

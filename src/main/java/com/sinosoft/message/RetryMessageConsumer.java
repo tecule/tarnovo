@@ -63,21 +63,27 @@ public class RetryMessageConsumer extends RetryMessageQueueClient {
 					throws IOException {
 				String messageBody = new String(body, "UTF-8");
 				try {					
-					command.execute(messageBody);
+					boolean retry = command.execute(messageBody);
+					if (true == retry) {
+						/*
+						 * republish the message with a Per-Message TTL.
+						 */
+						properties = properties.builder().expiration(Integer.toString(PER_MESSAGE_TTL)).build();
+						channel.basicPublish(RETRY_EXCHANGE_NAME, "", properties, body);
+					}
 				} catch (Exception e) {
-					logger.error("消费消息发生错误", e);
+					logger.error("处理消息发生错误，尝试会进行重试", e);
 					/*
-					 * requeue message to the original queue, this maybe lead to an infinte consume loop.
+					 * requeue message to the original queue, this maybe lead to an infinite consume loop.
 					 */
 					// channel.basicNack(envelope.getDeliveryTag(), false, true);
 
 					/*
 					 * republish the message with a Per-Message TTL.
 					 */
-					properties = properties.builder().expiration("10000").build();
+					properties = properties.builder().expiration(Integer.toString(PER_MESSAGE_TTL)).build();
 					channel.basicPublish(RETRY_EXCHANGE_NAME, "", properties, body);
 				} finally {
-
 					/*
 					 * ack messsage, so the message will be removed from work queue.
 					 */

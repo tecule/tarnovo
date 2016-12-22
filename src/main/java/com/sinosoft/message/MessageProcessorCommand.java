@@ -1,5 +1,5 @@
 package com.sinosoft.message;
 
 public interface MessageProcessorCommand {
-	public void execute(String messageBody);
+	public boolean execute(String messageBody);
 }
