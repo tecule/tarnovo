@@ -56,6 +56,13 @@ public class RetryMessageConsumer extends RetryMessageQueueClient {
 		channel.queueBind(RETRY_QUEUE_NAME, RETRY_EXCHANGE_NAME, "");
 	}
 
+	/**
+	 * handle message. retry if message handler exception.
+	 * 
+	 * @param command - message handler
+	 * @throws IOException
+	 * @author xiangqian
+	 */
 	public void consume(final MessageProcessorCommand command) throws IOException {
 		Consumer consumer = new DefaultConsumer(channel) {
 			@Override
@@ -72,7 +79,7 @@ public class RetryMessageConsumer extends RetryMessageQueueClient {
 						channel.basicPublish(RETRY_EXCHANGE_NAME, "", properties, body);
 					}
 				} catch (Exception e) {
-					logger.error("处理消息发生错误，尝试会进行重试", e);
+					logger.error("处理消息发生错误，尝试进行重试", e);
 					/*
 					 * requeue message to the original queue, this maybe lead to an infinite consume loop.
 					 */
