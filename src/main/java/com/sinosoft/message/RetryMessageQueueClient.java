@@ -18,6 +18,8 @@ public abstract class RetryMessageQueueClient {
 	 */
 	protected static final int RETRY_QUEUE_MESSAGE_TTL = 30000;
 	protected static final int PER_MESSAGE_TTL = 60000;
+	protected static final float PER_MESSAGE_TTL_EXPONENTIAL_FACTOR = 1.2f;
+	protected static final int MAX_PER_MESSAGE_TTL = 86400000;	// one day
 	
 	protected Connection connection;
 	protected Channel channel;

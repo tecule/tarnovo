@@ -2,6 +2,7 @@ package com.sinosoft.message;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -12,10 +13,11 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.LongString;
 
 public class RetryMessageConsumer extends RetryMessageQueueClient {
 	private static Logger logger = LoggerFactory.getLogger(RetryMessageConsumer.class);
-	
+
 	public void connect(String host, String virtualHost, String username, String password) throws IOException,
 			TimeoutException {
 		super.connect(host, virtualHost, username, password);
@@ -59,7 +61,8 @@ public class RetryMessageConsumer extends RetryMessageQueueClient {
 	/**
 	 * handle message. retry if message handler exception.
 	 * 
-	 * @param command - message handler
+	 * @param command
+	 *            - message handler
 	 * @throws IOException
 	 * @author xiangqian
 	 */
@@ -69,13 +72,40 @@ public class RetryMessageConsumer extends RetryMessageQueueClient {
 			public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
 					throws IOException {
 				String messageBody = new String(body, "UTF-8");
-				try {					
+				try {
 					boolean retry = command.execute(messageBody);
 					if (true == retry) {
 						/*
-						 * republish the message with a Per-Message TTL.
+						 * republish the message with an increasing Per-Message TTL.
 						 */
-						properties = properties.builder().expiration(Integer.toString(PER_MESSAGE_TTL)).build();
+						int expiration = PER_MESSAGE_TTL;
+						Map<String, Object> headers = properties.getHeaders();
+						if (null != headers) {
+							@SuppressWarnings("unchecked")
+							List<Map<String, Object>> xDeathHeader = (List<Map<String, Object>>) headers.get("x-death");
+							if (null != xDeathHeader) {
+								LongString expirationString = (LongString) xDeathHeader.get(0).get(
+										"original-expiration");
+								if (null != expirationString) {
+									// logger.debug("original-expiration: " + expirationString.toString());
+									expiration = Integer.parseInt(expirationString.toString());
+								}
+
+								Long count = (Long) xDeathHeader.get(0).get("count");
+								if (null != count) {
+									// logger.debug("count: " + count);
+									expiration = (int) (expiration * Math
+											.pow(PER_MESSAGE_TTL_EXPONENTIAL_FACTOR, count));
+								}
+
+								if (expiration > MAX_PER_MESSAGE_TTL) {
+									expiration = MAX_PER_MESSAGE_TTL;
+								}
+							}
+						}
+
+						properties = properties.builder().expiration(Integer.toString(expiration)).build();
+
 						channel.basicPublish(RETRY_EXCHANGE_NAME, "", properties, body);
 					}
 				} catch (Exception e) {
@@ -86,7 +116,7 @@ public class RetryMessageConsumer extends RetryMessageQueueClient {
 					// channel.basicNack(envelope.getDeliveryTag(), false, true);
 
 					/*
-					 * republish the message with a Per-Message TTL.
+					 * republish the message with a fixed Per-Message TTL.
 					 */
 					properties = properties.builder().expiration(Integer.toString(PER_MESSAGE_TTL)).build();
 					channel.basicPublish(RETRY_EXCHANGE_NAME, "", properties, body);
