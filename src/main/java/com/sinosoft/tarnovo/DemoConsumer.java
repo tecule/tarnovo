@@ -6,7 +6,6 @@ import java.util.concurrent.TimeoutException;
 import com.sinosoft.message.RetryMessageConsumer;
 import com.sinosoft.message.SimpleMessageConsumer;
 
-
 public class DemoConsumer {
     public static void main( String[] args )
     {
@@ -25,9 +24,6 @@ public class DemoConsumer {
 			
 			System.out.println("consumer end");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

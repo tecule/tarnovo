@@ -18,8 +18,7 @@ import com.rabbitmq.client.LongString;
 public class RetryMessageConsumer extends RetryMessageQueueClient {
 	private static Logger logger = LoggerFactory.getLogger(RetryMessageConsumer.class);
 
-	public void connect(String host, String virtualHost, String username, String password) throws IOException,
-			TimeoutException {
+	public void connect(String host, String virtualHost, String username, String password) throws IOException {
 		super.connect(host, virtualHost, username, password);
 
 		/*
