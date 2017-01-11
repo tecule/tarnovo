@@ -99,8 +99,8 @@ public abstract class RetryMessageQueueClient {
 				retry = false;
 			} catch (ConnectException e) {
 				try {
-					System.out.println("建立消息队列连接失败，将于" + RECONNECT_INTERVAL + "毫秒后重试，" + e.getClass() + "，"
-							+ e.getMessage());
+					// System.out.println("建立消息队列连接失败，将于" + RECONNECT_INTERVAL + "毫秒后重试，" + e.getClass() + "，"
+					// + e.getMessage());
 					logger.warn("建立消息队列连接失败，将于" + RECONNECT_INTERVAL + "毫秒后重试，" + e.getClass() + "，" + e.getMessage());
 					Thread.sleep(RECONNECT_INTERVAL);
 				} catch (InterruptedException e1) {
@@ -108,8 +108,8 @@ public abstract class RetryMessageQueueClient {
 				}
 			} catch (TimeoutException e) {
 				try {
-					System.out.println("建立消息队列连接失败，将于" + RECONNECT_INTERVAL + "毫秒后重试，" + e.getClass() + "，"
-							+ e.getMessage());
+					// System.out.println("建立消息队列连接失败，将于" + RECONNECT_INTERVAL + "毫秒后重试，" + e.getClass() + "，"
+					// + e.getMessage());
 					logger.warn("建立消息队列连接失败，将于" + RECONNECT_INTERVAL + "毫秒后重试，" + e.getClass() + "，" + e.getMessage());
 					Thread.sleep(RECONNECT_INTERVAL);
 				} catch (InterruptedException e1) {

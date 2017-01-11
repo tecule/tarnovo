@@ -1,10 +1,8 @@
 package com.sinosoft.tarnovo;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 import com.sinosoft.message.RetryMessageConsumer;
-import com.sinosoft.message.SimpleMessageConsumer;
 
 public class DemoConsumer {
     public static void main( String[] args )
