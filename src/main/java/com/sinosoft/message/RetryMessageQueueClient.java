@@ -132,4 +132,15 @@ public abstract class RetryMessageQueueClient {
 		channel.close();
 		connection.close();
 	}
+
+	/**
+	 * check if client is connected. Use of the isOpen() method of channel and connection objects is not recommended for
+	 * production code. https://www.rabbitmq.com/api-guide.html
+	 * 
+	 * @return
+	 * @author xiangqian
+	 */
+	public boolean isOpen() {
+		return (connection.isOpen() && channel.isOpen());
+	}
 }

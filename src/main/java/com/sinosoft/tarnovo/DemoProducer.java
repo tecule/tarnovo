@@ -22,6 +22,8 @@ public class DemoProducer {
 			for (int i = 0; i < 100; i++) {		
 				try {
 					System.out.println(i);
+					System.out.println("open: " + producer.isOpen());
+					System.out.println("reported");
 					producer.publish(new Date().toString());
 				} catch (AlreadyClosedException e) {
 					e.printStackTrace();
